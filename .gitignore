@@ -1,3 +1,4 @@
 /docker/ckb/data/
 /docker/postgres/
 /docker/redis/
+/docker/ckb-indexer

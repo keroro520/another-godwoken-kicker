@@ -43,3 +43,15 @@ services:
     command: [ "miner", "-C", "/var/lib/ckb" ]
     depends_on:
       - ckb
+
+  ckb-indexer:
+    image: nervos/ckb-indexer:0.3.2
+    environment:
+      CKB_RPC: http://ckb:8114
+    ports:
+      - "8116:8116"   # ckb-indexer rpc
+    volumes:
+      - ./ckb-indexer:/var/lib/ckb-indexer
+    command: [ "-c", "http://ckb:8114", "-l", "0.0.0.0:8116", "-s", "/var/lib/ckb-indexer" ]
+    depends_on:
+      - ckb
