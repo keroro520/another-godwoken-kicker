@@ -2,3 +2,4 @@
 /docker/postgres/
 /docker/redis/
 /docker/ckb-indexer
+/docker/godwoken/scripts-deployment.json

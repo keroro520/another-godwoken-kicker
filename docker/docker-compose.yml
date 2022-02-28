@@ -1,6 +1,8 @@
 version: '3'
 
-# TODO CKB health check before starting ckb-miner
+# TODO ckb health check before starting ckb-miner
+# TODO ckb health check: RPC started
+# TODO ckb-miner health check: 出够 15 个块
 services:
   postgres:
     image: postgres:alpine
@@ -55,3 +57,28 @@ services:
     command: [ "-c", "http://ckb:8114", "-l", "0.0.0.0:8116", "-s", "/var/lib/ckb-indexer" ]
     depends_on:
       - ckb
+
+  # This short-term service is used to deploy layer1 scripts and output the
+  # deployment information into "scripts-deployment.json" file.
+  #
+  # All the scripts were compiled and [packaged into "nervos/godwoken-prebuilds" image](https://github.com/nervosnetwork/godwoken-docker-prebuilds/blob/97729b15093af6e5f002b46a74c549fcc8c28394/Dockerfile#L42-L54)
+  deploy_scripts:
+    image: nervos/godwoken-prebuilds:v0.10.2
+    volumes:
+      - ./godwoken:/var/lib/godwoken
+      - ./share:/var/lib/share
+    command:
+      - "gw-tools"
+      - "deploy-scripts"
+      - "--ckb-rpc"
+      - "http://ckb:8114"
+      - "-i"
+      - "/var/lib/godwoken/scripts-config.json"
+      - "-o"
+      - "/var/lib/godwoken/scripts-deployment.json"
+      - "-k"
+      - "/var/lib/share/test_only_privkey_of_block_assembler"
+    restart: "no"
+    depends_on:
+      - ckb
+      - ckb-miner
