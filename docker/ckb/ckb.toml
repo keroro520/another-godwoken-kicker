@@ -152,10 +152,9 @@ block_uncles_cache_size    = 30
 # use_binary_version_as_message_prefix = true
 
 [block_assembler]
-# https://github.com/nervosnetwork/ckb/blob/34faafb20256c7bbb8869e95ba38e9e6132d3f5f/resource/specs/dev.toml#L79-L84
+# **IMPORTANT**: This is [a well-known account](https://github.com/nervosnetwork/ckb/blob/34faafb20256c7bbb8869e95ba38e9e6132d3f5f/resource/specs/dev.toml#L79-L84) and should be only used in test environment.
 #
-# IMPORTANT: To make it easier to perform tests, we use a public account. So don't use it in production environment.
-# 
+# The block_assembler should match `../docker/share/test_only_privkey_of_block_assembler`
 code_hash = "0x9bd7e06f3ecf4be0f2fcd2188b23f1b9fcc88e5d4b65a8637b17723bbda3cce8"
 args = "0x470dcdc5e44064909650113a274b3b36aecb6dc7"
 hash_type = "type"
