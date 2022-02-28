@@ -82,3 +82,13 @@ services:
     depends_on:
       - ckb
       - ckb-miner
+
+  generate_rollup_config:
+    image: nervos/ckb-indexer:0.3.2
+    volumes:
+      - ./godwoken:/var/lib/godwoken
+    entrypoint: /var/lib/godwoken/generate-rollup-config.sh
+    restart: "no"
+    depends_on:
+      deploy_scripts:
+        condition: service_completed_successfully
