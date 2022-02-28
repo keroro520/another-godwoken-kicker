@@ -1,5 +1,6 @@
 version: '3'
 
+# TODO CKB health check before starting ckb-miner
 services:
   postgres:
     image: postgres:alpine
@@ -20,3 +21,25 @@ services:
       - 6379:6379
     volumes:
       - ./redis/data:/data
+
+  ckb:
+    image: nervos/ckb:v0.101.4
+    environment:
+      CKB_CHAIN: devnet
+    ports:
+      - "8114:8114"   # rpc
+      - "18114:18114" # subscription
+      - "8115:8115"   # network
+    volumes:
+      - ./ckb:/var/lib/ckb
+    command: [ "run", "-C", "/var/lib/ckb" ]
+
+  ckb-miner:
+    image: nervos/ckb:v0.101.4
+    environment:
+      CKB_CHAIN: devnet
+    volumes:
+      - ./ckb:/var/lib/ckb
+    command: [ "miner", "-C", "/var/lib/ckb" ]
+    depends_on:
+      - ckb

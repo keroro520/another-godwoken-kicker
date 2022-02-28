@@ -1,0 +1,3 @@
+/docker/ckb/data/
+/docker/postgres/
+/docker/redis/
