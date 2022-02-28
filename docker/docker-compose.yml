@@ -3,6 +3,7 @@ version: '3'
 # TODO ckb health check before starting ckb-miner
 # TODO ckb health check: RPC started
 # TODO ckb-miner health check: 出够 15 个块
+# TODO provide an option to decide redeploy or not
 services:
   postgres:
     image: postgres:alpine
@@ -62,7 +63,7 @@ services:
   # deployment information into "scripts-deployment.json" file.
   #
   # All the scripts were compiled and [packaged into "nervos/godwoken-prebuilds" image](https://github.com/nervosnetwork/godwoken-docker-prebuilds/blob/97729b15093af6e5f002b46a74c549fcc8c28394/Dockerfile#L42-L54)
-  deploy_scripts:
+  deploy-scripts:
     image: nervos/godwoken-prebuilds:v0.10.2
     volumes:
       - ./godwoken:/var/lib/godwoken
@@ -83,12 +84,41 @@ services:
       - ckb
       - ckb-miner
 
-  generate_rollup_config:
+  # This short-term service generate rollup-config.json
+  generate-rollup-config:
     image: nervos/ckb-indexer:0.3.2
     volumes:
       - ./godwoken:/var/lib/godwoken
     entrypoint: /var/lib/godwoken/generate-rollup-config.sh
     restart: "no"
     depends_on:
-      deploy_scripts:
+      deploy-scripts:
+        condition: service_completed_successfully
+
+  # This short-term service deploys rollup's genesis cell
+  deploy-rollup-genesis-cell:
+    image: nervos/godwoken-prebuilds:v0.10.2
+    volumes:
+      - ./godwoken:/var/lib/godwoken
+      - ./share:/var/lib/share
+    command:
+      - "gw-tools"
+      - "deploy-genesis"
+      - "--ckb-rpc"
+      - "http://ckb:8114"
+      - "--scripts-deployment-path"
+      - "/var/lib/godwoken/scripts-deployment.json"
+      - "--rollup-config"
+      - "/var/lib/godwoken/rollup-config.json"
+      - "-p"
+      - "/var/lib/godwoken/poa-config.json"
+      - "-o"
+      - "/var/lib/godwoken/rollup-genesis-deployment.json"
+      - "-k"
+      - "/var/lib/share/test_only_privkey_of_block_assembler"
+    restart: "no"
+    depends_on:
+      deploy-scripts:
+        condition: service_completed_successfully
+      generate-rollup-config:
         condition: service_completed_successfully
