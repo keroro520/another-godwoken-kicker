@@ -1,8 +1,6 @@
 version: '3'
 
-# TODO ckb health check before starting ckb-miner
-# TODO ckb health check: RPC started
-# TODO ckb-miner health check: 出够 15 个块
+# TODO ckb-miner health check: block number is greater than 20
 services:
   postgres:
     image: postgres:alpine
@@ -36,6 +34,14 @@ services:
       - ./ckb:/var/lib/ckb
     command: [ "run", "-C", "/var/lib/ckb" ]
 
+  # "nervos/ckb" image have no http clients to do health check for CKB.
+  # ckb-health-check act as a workaround to do health check.
+  ckb-health-check:
+    image: nervos/godwoken-prebuilds:v0.10.2
+    volumes:
+      - ./ckb:/var/lib/ckb
+    entrypoint: /var/lib/ckb/ckb-health-check.sh
+
   ckb-miner:
     image: nervos/ckb:v0.101.4
     environment:
@@ -43,8 +49,6 @@ services:
     volumes:
       - ./ckb:/var/lib/ckb
     command: [ "miner", "-C", "/var/lib/ckb" ]
-    depends_on:
-      - ckb
 
   ckb-indexer:
     image: nervos/ckb-indexer:0.3.2
@@ -56,7 +60,8 @@ services:
       - ./ckb-indexer:/var/lib/ckb-indexer
     command: [ "-c", "http://ckb:8114", "-l", "0.0.0.0:8116", "-s", "/var/lib/ckb-indexer" ]
     depends_on:
-      - ckb
+      ckb-health-check:
+        condition: service_completed_successfully
 
   # This short-term service is used to deploy layer1 scripts and output the
   # deployment information into "scripts-deployment.json" file.
