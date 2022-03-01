@@ -5,3 +5,4 @@
 /docker/godwoken/scripts-deployment.json
 /docker/godwoken/rollup-config.json
 /docker/godwoken/rollup-genesis-deployment.json
+/docker/godwoken/godwoken-config.toml

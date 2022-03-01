@@ -58,8 +58,14 @@ function render_rollup_config() {
         | sed "s/L1_SUDT_CELL_DEP_OUT_POINT_INDEX/$l1_sudt_cell_dep_out_point_index/g"
 }
 
-workspace="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-script_deployment_file="$workspace/scripts-deployment.json"
-rollup_config_file="$workspace/rollup-config.json"
+WORKSPACE="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+script_deployment_file="$WORKSPACE/scripts-deployment.json"
+rollup_config_file="$WORKSPACE/rollup-config.json"
+
+if [ -e $rollup_config_file ]; then
+    echo "$rollup_config_file already exists, skip"
+    exit 0;
+fi
+
 echo $(render_rollup_config "$script_deployment_file") > $rollup_config_file
 echo "Generate rollup config to \"$rollup_config_file\" successfully"

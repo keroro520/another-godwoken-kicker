@@ -68,17 +68,7 @@ services:
     volumes:
       - ./godwoken:/var/lib/godwoken
       - ./share:/var/lib/share
-    command:
-      - "gw-tools"
-      - "deploy-scripts"
-      - "--ckb-rpc"
-      - "http://ckb:8114"
-      - "-i"
-      - "/var/lib/godwoken/scripts-config.json"
-      - "-o"
-      - "/var/lib/godwoken/scripts-deployment.json"
-      - "-k"
-      - "/var/lib/share/test_only_privkey_of_block_assembler"
+    entrypoint: /var/lib/godwoken/deploy-scripts.sh
     restart: "no"
     depends_on:
       - ckb
@@ -86,7 +76,7 @@ services:
 
   # This short-term service generate rollup-config.json
   generate-rollup-config:
-    image: nervos/ckb-indexer:0.3.2
+    image: nervos/godwoken-prebuilds:v0.10.2
     volumes:
       - ./godwoken:/var/lib/godwoken
     entrypoint: /var/lib/godwoken/generate-rollup-config.sh
@@ -94,31 +84,34 @@ services:
     depends_on:
       deploy-scripts:
         condition: service_completed_successfully
+      ckb:
+        condition: service_started
 
   # This short-term service deploys rollup's genesis cell
-  deploy-rollup-genesis-cell:
+  deploy-rollup-genesis:
     image: nervos/godwoken-prebuilds:v0.10.2
     volumes:
       - ./godwoken:/var/lib/godwoken
       - ./share:/var/lib/share
-    command:
-      - "gw-tools"
-      - "deploy-genesis"
-      - "--ckb-rpc"
-      - "http://ckb:8114"
-      - "--scripts-deployment-path"
-      - "/var/lib/godwoken/scripts-deployment.json"
-      - "--rollup-config"
-      - "/var/lib/godwoken/rollup-config.json"
-      - "-p"
-      - "/var/lib/godwoken/poa-config.json"
-      - "-o"
-      - "/var/lib/godwoken/rollup-genesis-deployment.json"
-      - "-k"
-      - "/var/lib/share/test_only_privkey_of_block_assembler"
+    entrypoint: /var/lib/godwoken/deploy-rollup-genesis.sh
     restart: "no"
     depends_on:
-      deploy-scripts:
-        condition: service_completed_successfully
       generate-rollup-config:
+        condition: service_completed_successfully
+      ckb:
+        condition: service_started
+      ckb-indexer:
+        condition: service_started
+
+  generate-godwoken-config:
+    image: nervos/godwoken-prebuilds:v0.10.2
+    ports:
+      - 8119:8119
+    volumes:
+      - ./godwoken:/var/lib/godwoken
+      - ./share:/var/lib/share
+    entrypoint: /var/lib/godwoken/generate-godwoken-config.sh
+    restart: "no"
+    depends_on:
+      deploy-rollup-genesis:
         condition: service_completed_successfully
