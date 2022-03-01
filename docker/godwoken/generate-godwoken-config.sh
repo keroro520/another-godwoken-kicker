@@ -15,7 +15,7 @@ RUST_BACKTRACE=full gw-tools generate-config \
     --scripts-deployment-path $WORKSPACE/scripts-deployment.json \
     -g $WORKSPACE/rollup-genesis-deployment.json \
     --rollup-config $WORKSPACE/rollup-config.json \
-    --privkey-path $WORKSPACE/../share/test_only_privkey_of_block_assembler \
+    --privkey-path $WORKSPACE/.test_only_privkey_of_block_assembler \
     -o $WORKSPACE/godwoken-config.toml \
     --rpc-server-url 0.0.0.0:8119
 

@@ -3,7 +3,6 @@ version: '3'
 # TODO ckb health check before starting ckb-miner
 # TODO ckb health check: RPC started
 # TODO ckb-miner health check: 出够 15 个块
-# TODO provide an option to decide redeploy or not
 services:
   postgres:
     image: postgres:alpine
@@ -67,7 +66,6 @@ services:
     image: nervos/godwoken-prebuilds:v0.10.2
     volumes:
       - ./godwoken:/var/lib/godwoken
-      - ./share:/var/lib/share
     entrypoint: /var/lib/godwoken/deploy-scripts.sh
     restart: "no"
     depends_on:
@@ -92,7 +90,6 @@ services:
     image: nervos/godwoken-prebuilds:v0.10.2
     volumes:
       - ./godwoken:/var/lib/godwoken
-      - ./share:/var/lib/share
     entrypoint: /var/lib/godwoken/deploy-rollup-genesis.sh
     restart: "no"
     depends_on:
@@ -109,7 +106,6 @@ services:
       - 8119:8119
     volumes:
       - ./godwoken:/var/lib/godwoken
-      - ./share:/var/lib/share
     entrypoint: /var/lib/godwoken/generate-godwoken-config.sh
     restart: "no"
     depends_on:

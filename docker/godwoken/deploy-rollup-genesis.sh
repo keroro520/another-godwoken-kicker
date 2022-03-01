@@ -13,4 +13,4 @@ RUST_BACKTRACE=full gw-tools deploy-genesis \
     --rollup-config $WORKSPACE/rollup-config.json \
     -p $WORKSPACE/poa-config.json \
     -o $WORKSPACE/rollup-genesis-deployment.json \
-    -k $WORKSPACE/../share/test_only_privkey_of_block_assembler
+    -k $WORKSPACE/.test_only_privkey_of_block_assembler

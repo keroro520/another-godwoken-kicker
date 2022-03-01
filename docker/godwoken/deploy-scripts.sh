@@ -11,4 +11,4 @@ RUST_BACKTRACE=full gw-tools deploy-scripts \
     --ckb-rpc http://ckb:8114 \
     -i $WORKSPACE/scripts-config.json \
     -o $WORKSPACE/scripts-deployment.json \
-    -k $WORKSPACE/../share/test_only_privkey_of_block_assembler
+    -k $WORKSPACE/.test_only_privkey_of_block_assembler
