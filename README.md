@@ -1,4 +1,4 @@
-# Minimal Godwoken Kicker
+# Scaffold-Godwoken
 
 ## How to start
 
