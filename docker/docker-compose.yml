@@ -107,8 +107,6 @@ services:
 
   generate-godwoken-config:
     image: nervos/godwoken-prebuilds:v0.10.2
-    ports:
-      - 8119:8119
     volumes:
       - ./godwoken:/var/lib/godwoken
     entrypoint: /var/lib/godwoken/generate-godwoken-config.sh
@@ -116,3 +114,17 @@ services:
     depends_on:
       deploy-rollup-genesis:
         condition: service_completed_successfully
+
+  godwoken:
+    image: nervos/godwoken-prebuilds:v0.10.2
+    ports:
+      - 8119:8119
+      - 8120:8120
+    volumes:
+      - ./godwoken:/var/lib/godwoken
+    depends_on:
+      ckb-health-check:
+        condition: service_completed_successfully
+      generate-godwoken-config:
+        condition: service_completed_successfully
+    command: [ "godwoken", "run", "-c", "/var/lib/godwoken/godwoken-config.toml" ]
